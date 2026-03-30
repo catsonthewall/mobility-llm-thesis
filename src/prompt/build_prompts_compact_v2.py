@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
 # Build compact prompts for sociodemographic prediction
-# Fixed: 28 Mar 2026
+# Fixed: 28 Mar 2026 version xx
 # Fix: POI CRS handling — matches notebook's load_poi_frame behaviour
 # ---------------------------------------------------------------------------
 
@@ -49,17 +49,17 @@ def load_poi_frame(path: Path) -> gpd.GeoDataFrame:
     if poi.crs is not None and poi.crs.to_epsg() == 4326:
         print("🔄 Reprojecting POI from EPSG:4326 → EPSG:2056")
         return poi.to_crs(2056)
-    # If CRS is None or unknown, set it as 2056 (coordinates look like Swiss)
+    # If CRS is None or unknown, set it as 2056 to make sure geometry is interpreted correctly  
     x_sample = poi.geometry.x.median()
     if 2_000_000 < x_sample < 3_000_000:
-        print("✅ Coordinates look like LV95 (2056), setting CRS")
+        print("Coordinates look like 2056, setting CRS")
         return poi.set_crs(epsg=2056)
     # Coordinates look like WGS84 (lon/lat)
     if -180 < x_sample < 180:
-        print("🔄 Coordinates look like WGS84, setting 4326 then reprojecting to 2056")
+        print(" Coordinates look like WGS84, setting 4326 then reprojecting to 2056")
         return poi.set_crs(epsg=4326).to_crs(2056)
     # Fallback — just set as 2056 (matches notebook behaviour)
-    print("⚠️  Unknown CRS, forcing EPSG:2056 (matches notebook)")
+    print(" Unknown CRS, forcing EPSG:2056 (matches notebook)")
     return poi.set_crs(epsg=2056, allow_override=True)
 
 poi = load_poi_frame(POI_PATH)
@@ -67,9 +67,7 @@ print(f"\nPOI after fix — crs: {poi.crs}")
 print(f"POI x range: {poi.geometry.x.min():.0f} to {poi.geometry.x.max():.0f}")
 print(f"POI y range: {poi.geometry.y.min():.0f} to {poi.geometry.y.max():.0f}")
 
-# --------------------------------------
-# Helper functions
-# --------------------------------------
+
 def clean_addr_part(s):
     if pd.isna(s): return None
     s = str(s).strip()
@@ -110,7 +108,7 @@ def get_poi_context_for_prompt(sp_sampled, poi, top_k=5):
     poi_x_med = poi_proj.geometry.x.median()
     print(f"  loc x median: {loc_x_med:.0f} | poi x median: {poi_x_med:.0f}")
     if abs(loc_x_med - poi_x_med) > 500_000:
-        print("  ⚠️  Large coordinate gap — CRS mismatch likely!")
+        print(" Large coordinate gap — CRS mismatch likely")
 
     poi_xy = np.c_[poi_proj.geometry.x.values, poi_proj.geometry.y.values]
     tree   = cKDTree(poi_xy)
@@ -136,7 +134,7 @@ def get_poi_context_for_prompt(sp_sampled, poi, top_k=5):
         joined["category"].notna() &
         (~joined["category"].str.lower().isin(["unknown", "others"]))
     ]
-    joined["addr_poi_dist_km"] = (joined["addr_poi_dist_m"] / 1000).round(3)
+    joined["addr_poi_dist_km"] = (joined["addr_poi_dist_m"] / 1000).round(2)
     joined["direction"] = [
         bearing_to_direction(dx, dy)
         for dx, dy in zip(joined.dx, joined.dy)
@@ -164,7 +162,7 @@ def build_poi_prompt_text(df):
 # Build POI context and merge
 # --------------------------------------
 if "nearby_places" in sp_sampled2.columns and sp_sampled2["nearby_places"].notna().sum() > 0:
-    print(f"\n✅ nearby_places already exists ({sp_sampled2['nearby_places'].notna().sum()} rows), skipping POI computation")
+    print(f"\nnearby_places already exists ({sp_sampled2['nearby_places'].notna().sum()} rows), skipping POI computation")
 else:
     print("\n🔧 Computing POI context...")
     poi_prompt_df = (
@@ -184,7 +182,7 @@ else:
     print(f"nearby_places filled: {sp_sampled2['nearby_places'].notna().sum()} / {len(sp_sampled2)}")
 
     sp_sampled2.to_csv(SP_PATH, index=False)
-    print(f"✅ Saved updated sp_sampled2 → {SP_PATH}")
+    print(f" Saved updated sp_sampled2 → {SP_PATH}")
 
 # --------------------------------------
 # Compact token builder
@@ -309,8 +307,8 @@ print(f"\n✅ Saved {len(rows_prompts)} prompts → {PROMPTS_OUT}")
 if rows_prompts:
     sample = rows_prompts[0]["prompt"]
     approx_tokens = len(sample.split()) * 1.3
-    print(f"📊 Sample word count: {len(sample.split())}")
-    print(f"📊 Approx tokens: {approx_tokens:.0f}")
+    print(f" Sample word count: {len(sample.split())}")
+    print(f"Approx tokens: {approx_tokens:.0f}")
     print(f"\n--- Sample (first 600 chars) ---")
     print(sample[:600])
     print("...")

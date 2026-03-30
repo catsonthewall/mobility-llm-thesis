@@ -9,7 +9,6 @@ import threading
 from pathlib import Path
 
 os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
-
 import pandas as pd
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -191,13 +190,13 @@ with open(PROMPT_TXT, "r", encoding="utf-8") as f:
     raw = f.read()
 
 prompts = [p.strip() for p in raw.split(SEP) if p.strip()]
-print(f"📦 Loaded {len(prompts)} prompts")
+print(f" Loaded {len(prompts)} prompts")
 
 done_users = load_done_users(PRED_JSON)
-print(f"🔁 Found {len(done_users)} completed users")
+print(f"Found {len(done_users)} completed users")
 
 # --------------------------------------
-# Load model + tokenizer ONCE
+# Load model + tokenizer
 # --------------------------------------
 print("🔧 Loading tokenizer and model...")
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
@@ -210,9 +209,9 @@ model = AutoModelForCausalLM.from_pretrained(
 model.eval()
 
 allocated = torch.cuda.memory_allocated() / 1e9
-print(f"✅ Model loaded — GPU: {allocated:.1f} GB allocated")
+print(f"Model loaded — GPU: {allocated:.1f} GB allocated")
 if allocated < 0.1:
-    print("⚠️  WARNING: Model may not be on GPU — check nvidia-smi")
+    print("WARNING: Model may not be on GPU — check nvidia-smi")
 
 # --------------------------------------
 # Main loop
@@ -222,19 +221,19 @@ try:
 
         m = re.search(r"User:\s*(\S+)", prompt)
         if not m:
-            print("⚠️  Cannot find user_id, skipping")
+            print(" Cannot find user_id, skipping")
             continue
 
         user_id = m.group(1)
 
         if user_id in done_users:
-            print(f"⏭️  Skipping {user_id}")
+            print(f" Skipping {user_id}")
             continue
 
-        print(f"\n🔮 [{i}/{len(prompts)}] Predicting {user_id}")
+        print(f"\n [{i}/{len(prompts)}] Predicting {user_id}")
 
         if len(prompt) > MAX_PROMPT_CHARS:
-            print("⚠️  Prompt too long (chars), skipping")
+            print("  Prompt too long (chars), skipping")
             continue
 
         try:
@@ -259,7 +258,7 @@ try:
 
             n_tokens = inputs["input_ids"].shape[1]
             if n_tokens >= max_input_tokens:
-                print(f"⚠️  Truncated to {max_input_tokens} tokens")
+                print(f" Truncated to {max_input_tokens} tokens")
 
             gen_kwargs = dict(
                 max_new_tokens=MAX_NEW_TOKENS,
@@ -290,16 +289,16 @@ try:
             gender = result.get("gender", "?")
             hh = result.get("household_size", "?")
             inc = result.get("household_income_level", "?")
-            print(f"✅ Done → age:{age} gender:{gender} hh:{hh} income:{inc}")
+            print(f"Done → age:{age} gender:{gender} hh:{hh} income:{inc}")
 
         except TimeoutError:
-            print(f"⏰ Timeout after {TIMEOUT_SEC}s")
+            print(f"Timeout after {TIMEOUT_SEC}s")
             torch.cuda.empty_cache()
             gc.collect()
             continue
 
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
             torch.cuda.empty_cache()
             gc.collect()
             time.sleep(2)
@@ -310,15 +309,15 @@ try:
             time.sleep(COOLDOWN_SEC)
 
 except KeyboardInterrupt:
-    print("\n🛑 Interrupted safely.")
+    print("\n Interrupted safely.")
     sys.exit(0)
 
 # --------------------------------------
-# Save CSV snapshot
+# Save csv snapshot
 # --------------------------------------
 if PRED_JSON.exists():
     df = pd.read_json(PRED_JSON, lines=True)
     df.to_csv(PRED_CSV, index=False)
-    print(f"\n🎉 Saved → {PRED_CSV}")
+    print(f"\n Saved → {PRED_CSV}")
 else:
-    print("⚠️  No predictions generated")
+    print("No predictions generated")

@@ -110,10 +110,10 @@ with open(PROMPT_TXT, "r", encoding="utf-8") as f:
     raw = f.read()
 
 prompts = [p.strip() for p in raw.split(SEP) if p.strip()]
-print(f"📦 Loaded {len(prompts)} prompts")
+print(f"Loaded {len(prompts)} prompts")
 
 done_users = load_done_users(PRED_JSON)
-print(f"🔁 Found {len(done_users)} completed users")
+print(f"Found {len(done_users)} completed users")
 
 # --------------------------------------
 # Load model + tokenizer once
@@ -128,11 +128,11 @@ model = AutoModelForCausalLM.from_pretrained(
     offload_buffers=True,       # ← fixes the buffer warning
 )
 model.eval()
-print("✅ Model loaded")
-print(f"🖥️  GPU memory after load: {torch.cuda.memory_allocated()/1e9:.1f} GB allocated")
+print("Model loaded")
+print(f"GPU memory after load: {torch.cuda.memory_allocated()/1e9:.1f} GB allocated")
 
 # Sanity check — abort early if model is not on GPU
-assert torch.cuda.memory_allocated() > 1e8, "❌ Model not on GPU! Check nvidia-smi."
+assert torch.cuda.memory_allocated() > 1e8, "Model not on GPU! Check nvidia-smi."
 
 # --------------------------------------
 # Main loop
@@ -142,19 +142,19 @@ try:
 
         m = re.search(r"User:\s*(\S+)", prompt)
         if not m:
-            print("⚠️  Cannot find user_id, skipping")
+            print(" Cannot find user_id, skipping")
             continue
 
         user_id = m.group(1)
 
         if user_id in done_users:
-            print(f"⏭️  Skipping {user_id}")
+            print(f"Skipping {user_id}")
             continue
 
-        print(f"\n🔮 [{i}/{len(prompts)}] Predicting {user_id}")
+        print(f"\n[{i}/{len(prompts)}] Predicting {user_id}")
 
         if len(prompt) > MAX_PROMPT_CHARS:
-            print("⚠️  Prompt too long (chars), skipping")
+            print(" Prompt too long (chars), skipping")
             continue
 
         try:
@@ -201,15 +201,15 @@ try:
                 f.write(json.dumps(result, ensure_ascii=False) + "\n")
 
             done_users.add(user_id)
-            print("✅ Done")
+            print(" Done")
 
         except TimeoutError:
-            print("⏰ Timeout")
+            print(" Timeout")
             signal.alarm(0)
             continue
 
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
             signal.alarm(0)
             time.sleep(2)
             continue
@@ -219,7 +219,7 @@ try:
             time.sleep(COOLDOWN_SEC)
 
 except KeyboardInterrupt:
-    print("\n🛑 Interrupted safely.")
+    print("\n Interrupted safely.")
     sys.exit(0)
 
 # --------------------------------------
@@ -228,6 +228,6 @@ except KeyboardInterrupt:
 if PRED_JSON.exists():
     df = pd.read_json(PRED_JSON, lines=True)
     df.to_csv(PRED_CSV, index=False)
-    print(f"\n🎉 Saved → {PRED_CSV}")
+    print(f"\n Saved → {PRED_CSV}")
 else:
-    print("⚠️  No predictions generated")
+    print(" No predictions generated")
