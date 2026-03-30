@@ -1,0 +1,23 @@
+model:
+  qwen:
+    name: "Qwen/Qwen2-7B-Instruct"
+    max_new_tokens: 512
+    temperature: 0.5
+    max_ctx: 32768
+  deepseek:
+    name: "deepseek-ai/deepseek-llm-7b-chat"
+    max_new_tokens: 350
+    temperature: 0.2
+    max_ctx: 4096
+
+paths:
+  hf_home: "/data/baliu/hf_hub"
+  data_dir: "/data/baliu/python_code/data"
+  prompt_txt: "prompts_v4_compact_28Mar2026.txt"
+  log_dir: "/data/baliu/python_code/logs"
+
+inference:
+  timeout_sec: 300
+  cooldown_every: 20
+  cooldown_sec: 10
+  max_prompt_chars: 28000

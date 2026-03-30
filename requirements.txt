@@ -1,0 +1,9 @@
+torch==2.5.1
+transformers==4.47.0
+accelerate==0.34.0
+pandas
+geopandas
+scipy
+numpy
+pyyaml
+tqdm
