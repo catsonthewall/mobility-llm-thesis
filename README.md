@@ -1,16 +1,19 @@
-# Mobility LLM Thesis
+# Sociodemographic Inference from GNSS Mobility Trajectories
 
-This project investigates whether mobiity trajectories can reveal sociodemographic characteristics using large language models(LLMs).
-
-Specifically, we aim to infer attributes such as:
-age group, 
-gender, 
-household size, 
-household income level
-from GPS trajectories data using LLM inference.
+Code accompanying the MSc thesis [thesis title] (University of Zurich, 2026). The repository contains the full path from raw MOBIS staypoints to sociodemographic predictions: mobility-indicator construction, indicator–target association analysis, feature-based classification, and LLM-based inference from two language representations of the same trajectories.
 
 ## Research Motivation
 Human mobility patterns encode rich behavioral siganls. Daily routines- such as commuting, leisure activities, and spatial movement- are strongly associated with sociodemographic characteristics.
+
+
+### Data availability
+
+The MOBIS data are not included in this repository and cannot be redistributed. The dataset is governed by the data protection terms of the MOBIS study; access must be requested from the study holders. See Molloy et al. (2022), The MOBIS dataset: a large GPS dataset of mobility behaviour in Switzerland, Transportation.
+
+The OpenStreetMap POI layers used for geographic enrichment are derived from public OSM extracts and can be rebuilt with <script> (see Pipeline, step 2).
+
+Every script reads its inputs from the paths configured in config.yaml; no data file is committed.
+
 
 ## Method Overview
 The pipeline consists of:
@@ -27,19 +30,20 @@ The pipeline consists of:
 
 ## Project Structure
 ```
-src/
-├── data/       # Data loading, cleaning, and sampling
-├── geo/        # POI retrival, reverse geocoding (OSM) 
-├── features/   # Mobility feature extraction
-├── prompt/     # Compact prompt builder
-├── model/      # Model loading and inference
-└── utils/      # Shared I/O utilities
-scripts/        # Entry point scripts
-config/         # Parameters (config.yaml)
-notebooks/      # EDA only
-data/           # No, for privacy reason
-logs/           # Experiment logs
-```
+.
+├── config.yaml                  # all paths, thresholds and seeds
+├── requirements.txt
+├── src/
+│   ├── preprocessing/           # cleaning, windowing, cohort linkage
+│   ├── enrichment/              # reverse geocoding, POI build, POI proximity
+│   ├── indicators/              # the 41 mobility indicators
+│   ├── models/                  # feature-based classifiers
+│   ├── llm/                     # verbalization, prompting, response parsing
+│   └── evaluation/              # metrics, association analysis, tables
+├── scripts/                     # entry points, numbered in run order
+├── prompts/                     # prompt templates used in the LLM chapter
+└── outputs/                     # generated tables and figures (git-ignored)
+
 
 ## Run Inference (on server)
 ```bash
