@@ -6,7 +6,7 @@ sociodemographic predictions: mobility-indicator construction, indicator–targe
 association analysis, feature-based classification, and LLM-based inference from
 two language representations of the same trajectories.
 
-**Thesis:** [link or DOI once available]
+**Thesis:
 
 ---
 
