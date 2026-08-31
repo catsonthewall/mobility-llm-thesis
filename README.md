@@ -1,6 +1,6 @@
 # Sociodemographic Inference from GNSS Mobility Trajectories
 
-Code accompanying the MSc thesis *[thesis title]* (University of Zurich, 2026).
+Code accompanying the MSc thesis *Sociodemographic Inference from GNSS Trajectories: An Exploration with Machine Learning and Large Language Models* (University of Zurich, 2026).
 The repository contains the full path from raw MOBIS staypoints to
 sociodemographic predictions: mobility-indicator construction, indicator–target
 association analysis, feature-based classification, and LLM-based inference from
