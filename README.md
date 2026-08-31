@@ -84,7 +84,7 @@ Scripts are numbered in run order and are idempotent: each writes its output to
 | 5 | `scripts/05_association_analysis/051_age_association_analysis.py;052_gender_association_analysis.py;053_income_association_analysis.py;` | indicator matrix, targets | Spearman / rank-biserial associations, BH-adjusted |
 | 6 | `scripts/06_train_classifiers/061_ml_classification_age.py;062_ml_classification_gender.py;063_ml_classification_income.py;` | indicator matrix, targets | fitted models, test-split metrics | evluation |
 | 7 | `scripts/07_hicot_verbalized_indicator_pipeline.py` | indicator | verbalized indicators,  | inferred results | metrics | 
-| 8 | `scripts/08_hicot_daily_pipeline.py` | textual daily diary representations, serialized diaries, prompts | inferred results | metrics | 
+| 8 | `scripts/08_hicot_daily_pipeline.py` | textual daily diary representations, serialized diaries, prompts, | inferred results | metrics | 
 
 Run the whole pipeline:
 
