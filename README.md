@@ -77,7 +77,7 @@ Scripts are numbered in run order and are idempotent: each writes its output to
 
 | Step | Script | Input | Output |
 |---|---|---|---|
-| 1 | `scripts/01_prepare_cohort.py` | raw MOBIS staypoints, survey table | cleaned event table, analytical cohort |
+| 1 | `scripts/00_read_and_filter.py;01_merge_mobis_data.py ` | raw MOBIS staypoints, survey table | cleaned event table |
 | 2 | `scripts/02_build_poi_layer.py` | OSM extract | projected POI GeoPackage (EPSG:2056) |
 | 3 | `scripts/03_enrich_context.py` | event table, POI layer | reverse-geocoded events with POI context |
 | 4 | `scripts/04_build_indicators.py` | enriched events | 41-dimensional indicator matrix |
