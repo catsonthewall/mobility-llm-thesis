@@ -81,12 +81,10 @@ Scripts are numbered in run order and are idempotent: each writes its output to
 | 2 | `scripts/02_build_poi_layer.py` | OSM extract | projected POI GeoPackage (EPSG:2056) |
 | 3 | `scripts/03_enrich_context.py` | event table, POI layer | reverse-geocoded events with POI context |
 | 4 | `scripts/04_build_indicators.py` | enriched events | 41-dimensional indicator matrix |
-| 5 | `scripts/05_association_analysis.py` | indicator matrix, targets | Spearman / rank-biserial associations, BH-adjusted |
-| 6 | `scripts/06_train_classifiers.py` | indicator matrix, targets | fitted models, test-split metrics |
-| 7 | `scripts/07_verbalize.py` | indicator matrix, enriched events | verbalized indicators, serialized diaries |
-| 8 | `scripts/08_run_llm.py` | textual representations, prompts | raw model responses |
-| 9 | `scripts/09_score_llm.py` | raw responses | parsed predictions, metrics |
-| 10 | `scripts/10_make_tables.py` | all metric files | LaTeX tables reproducing the thesis |
+| 5 | `scripts/05_association_analysis/051_age_association_analysis.py;052_gender_association_analysis.py;053_income_association_analysis.py;` | indicator matrix, targets | Spearman / rank-biserial associations, BH-adjusted |
+| 6 | `scripts/06_train_classifiers/061_ml_classification_age.py;062_ml_classification_gender.py;063_ml_classification_income.py;` | indicator matrix, targets | fitted models, test-split metrics | evluation |
+| 7 | `scripts/07_hicot_verbalized_indicator_pipeline.py` | indicator | verbalized indicators,  | inferred results | metrics | 
+| 8 | `scripts/08_hicot_daily_pipeline.py` | textual daily diary representations, serialized diaries, prompts | inferred results | metrics | 
 
 Run the whole pipeline:
 
@@ -99,7 +97,7 @@ python scripts/10_make_tables.py
 Or a single stage, for example the classifiers only:
 
 ```bash
-python scripts/06_train_classifiers.py --target income --model random_forest
+python scripts/06_train_classifiers --target income --model random_forest
 ```
 
 ---
@@ -110,7 +108,7 @@ All parameters that affect results live in `config.yaml`, not in the code:
 
 ```yaml
 window:
-  length_days: 7            # analysis window per participant
+  length_days: 7days or 4 weeks            # analysis window per participant
   min_tracking_days: 50     # retention threshold
 split:
   test_fraction: 0.2
@@ -150,25 +148,10 @@ is reported alongside every LLM metric.
 
 ## Outputs
 
-`scripts/10_make_tables.py` regenerates the result tables of the thesis as
-LaTeX fragments in `outputs/tables/`, and the association figures in
+`scripts/07_hicot_verbalized_indicator_pipeline.py`
+ `| 8 |scripts/08_hicot_daily_pipeline.py`  `outputs/tables/`, and the association figures in
 `outputs/figures/`. File names match the table and figure labels used in the
 thesis.
 
 ---
 
-## Citation
-
-```bibtex
-@mastersthesis{liu2026mobility,
-  title  = {[thesis title]},
-  author = {Liu, Baoyu},
-  school = {University of Zurich},
-  year   = {2026}
-}
-```
-
-## License
-
-Code released under the MIT License (see `LICENSE`). This applies to the code
-only; the MOBIS data and the OSM-derived layers are governed by their own terms.
