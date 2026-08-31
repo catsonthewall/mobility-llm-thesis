@@ -83,15 +83,15 @@ Scripts are numbered in run order and are idempotent: each writes its output to
 | 4 | `scripts/04_build_indicators.py` | enriched events | 41-dimensional indicator matrix |
 | 5 | `scripts/05_association_analysis/051_age_association_analysis.py;052_gender_association_analysis.py;053_income_association_analysis.py;` | indicator matrix, targets | Spearman / rank-biserial associations, BH-adjusted |
 | 6 | `scripts/06_train_classifiers/061_ml_classification_age.py;062_ml_classification_gender.py;063_ml_classification_income.py;` | indicator matrix, targets | fitted models, test-split metrics | evluation |
-| 7 | `scripts/07_hicot_verbalized_indicator_pipeline.py` | indicator | verbalized indicators,  | inferred results | metrics | 
-| 8 | `scripts/08_hicot_daily_pipeline.py` | textual daily diary representations, serialized diaries, prompts, | inferred results | metrics | 
+| 7 | `scripts/07_hicot_verbalized_indicator_pipeline.py` | indicator, verbalized indicators,  | inferred results, metrics | 
+| 8 | `scripts/08_hicot_daily_pipeline.py` | textual daily diary representations, serialized diaries, prompts, | inferred results, metrics | 
 
 Run the whole pipeline:
 
 ```bash
-python scripts/01_prepare_cohort.py
-# ... steps 2-9 ...
-python scripts/10_make_tables.py
+python scripts/00_read_and_filter.py
+# ... steps 2-8 ...
+python scripts/08_hicot_daily_pipeline.py
 ```
 
 Or a single stage, for example the classifiers only:
@@ -149,7 +149,7 @@ is reported alongside every LLM metric.
 ## Outputs
 
 `scripts/07_hicot_verbalized_indicator_pipeline.py`
- `| 8 |scripts/08_hicot_daily_pipeline.py`  `outputs/tables/`, and the association figures in
+ `| 8 |scripts/08_hicot_daily_pipeline.py`, and the association figures in
 `outputs/figures/`. File names match the table and figure labels used in the
 thesis.
 
