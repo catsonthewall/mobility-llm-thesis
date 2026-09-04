@@ -1,4 +1,4 @@
-# Sociodemographic Inference from GNSS Mobility Trajectories
+# Sociodemographic Inference from GNSS Trajectories: An Exploration with Machine Learning and Large Language Models
 
 Code accompanying the MSc thesis *Sociodemographic Inference from GNSS Trajectories: An Exploration with Machine Learning and Large Language Models* (University of Zurich, 2026).
 The repository contains the full path from raw MOBIS staypoints to
